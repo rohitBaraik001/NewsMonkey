@@ -11,10 +11,11 @@ const News = (props) => {
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
     const [totalResults, setTotalResults] = useState(0);
+    const key = process.env.REACT_APP_NEWS_KEY
 
     const updateNews = async () => {
         props.setProgress(0)
-        let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=d34078d879ae4e68a42594e68b7b477e&page=${page}&pageSize=${props.pageSize}`
+        let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${key}&page=${page}&pageSize=${props.pageSize}`
         setLoading(true)
         let data = await fetch(url)
         props.setProgress(30)
@@ -32,29 +33,8 @@ const News = (props) => {
         updateNews();
     }, [])
 
-    // handleNextClick = async () => {
-    //     console.log("next clicked")
-    //     let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&&category=${this.props.category}&apiKey=d34078d879ae4e68a42594e68b7b477e&page=${this.state.page + 1}&pageSize=${this.props.pageSize}`
-    //     this.setState({ loading: true })
-    //     let data = await fetch(url)
-    //     let parseData = await data.json()
-    //     console.log(parseData)
-    //     this.setState({ page: this.state.page + 1, articles: parseData.articles, totalResults: parseData.totalResults, loading: false })
-    // }
-
-    // handlePrevClick = async () => {
-    //     console.log("prev clicked")
-    //     let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&&category=${this.props.category}&apiKey=d34078d879ae4e68a42594e68b7b477e&page=${this.state.page - 1}&pageSize=${this.props.pageSize}`
-    //     this.setState({ loading: true })
-    //     let data = await fetch(url)
-    //     let parseData = await data.json()
-    //     console.log(parseData)
-
-    //     this.setState({ page: this.state.page - 1, articles: parseData.articles, loading: false })
-    // }
-
     const fetchMoreData = async () => {
-        let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=d34078d879ae4e68a42594e68b7b477e&page=${page + 1}&pageSize=${props.pageSize}`
+        let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey={}&page=${page + 1}&pageSize=${props.pageSize}`
         setPage(page + 1)
         setLoading(true)
         let data = await fetch(url)
