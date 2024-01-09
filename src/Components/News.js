@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import NewsItem from './NewsItem'
 import Spinner from './Spinner';
 import InfiniteScroll from "react-infinite-scroll-component";
+import FetchNews from './FetchNews'
 
 const News = (props) => {
     const capitalizeFirstLetter = (string) => {
@@ -11,7 +12,20 @@ const News = (props) => {
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
     const [totalResults, setTotalResults] = useState(0);
+    const [news, setNews] = useState([]);
     const key = process.env.REACT_APP_NEWS_KEY
+
+
+    const getNews = async () => {
+        console.log("loading news")
+        const result = await FetchNews(props.country, props.category);
+        // console.log("this new is from rapid api");
+        // console.log(result.data);
+        setNews(result.data);
+    }
+
+
+
 
     const updateNews = async () => {
         props.setProgress(0)
@@ -30,45 +44,39 @@ const News = (props) => {
 
     useEffect(() => {
         document.title = "NewsMonkey - " + props.category
-        updateNews();
+        getNews();
+
     }, [])
 
-    const fetchMoreData = async () => {
-        let url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey={}&page=${page + 1}&pageSize=${props.pageSize}`
-        setPage(page + 1)
-        setLoading(true)
-        let data = await fetch(url)
-        let parseData = await data.json()
-        console.log(parseData)
-        setArticles(articles.concat(parseData.articles))
-        setLoading(false)
-    }
+
 
     return (
         <>
-            <h1 className='text-center ' style={{ margin: "35px", marginTop: "95px" }}>NewsMonkey -Top {capitalizeFirstLetter(props.category)} headlines</h1>
-            {loading && <Spinner />}
-            <InfiniteScroll
-                dataLength={articles?.length}
-                next={fetchMoreData}
-                hasMore={articles?.length !== totalResults}
-                loader={<Spinner />}
-            >
-                <div className='container '>
-                    <div className='row'>
-                        {(articles === undefined ? "" : articles.map((element) => (
 
-                            <div className='col-4'  key={element.url}>
-                                <NewsItem title={element.title === undefined ? "Mytitile" : element.title} description={element.description} imageUrl={element.urlToImage} newsUrl={element.url} author={element.author} date={element.publishedAt} />
+            <h1 className='text-center' style={{ margin: '35px', marginTop: '95px' }}>
+                NewsMonkey - Top {capitalizeFirstLetter(props.category)} headlines
+            </h1>
+            <div className='happy'>
+                <div className='row row-cols-1 row-cols-md-3'>
+                    {news === undefined
+                        ? ''
+                        : news.map((element) => (
+                            <div className='col mb-3' key={element.link}>
+                                <NewsItem
+                                    title={element.title === undefined ? 'My Title' : element.title}
+                                    description={element.source_url}
+                                    imageUrl={element.photo_url}
+                                    newsUrl={element.link}
+                                    date={element.published_datetime_utc}
+                                />
                             </div>
-                        )))}
-                    </div>
+                        ))}
                 </div>
-            </InfiniteScroll>
-            {/* <div className='container d-flex justify-content-between'>
-                    <button disabled={this.state.page <= 1} type="button" className="btn btn-dark" onClick={this.handlePrevClick}>&larr; Previous</button>
-                    <button disabled={this.state.page + 1 > Math.ceil(this.state.totalResults / this.props.pageSize)} type="button" className="btn btn-dark" onClick={this.handleNextClick}>Next &rarr;</button>
-                </div> */}
+            </div>
+
+
+
+
         </>
 
     )
